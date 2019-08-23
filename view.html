@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <title></title>
+    <link rel="stylesheet" href="https://tweb.hopsontong.com:11013/css/resetview.css" type="text/css">
+    <link rel="stylesheet" href="https://tweb.hopsontong.com:11013/css/view.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+ 
+</head>
+
+<body>
+    <div id="app">
+        <div id="wrap">
+            <div class="item" v-for="(item,index) in gameList" @click="joinGame(index)" :class="item.aniChange ? `ani${index}` : ''">
+                <div class="back" :class={on:item.done}>
+                    <img :src="item.backSrc" alt="">
+                </div>
+                <div class="front" :class={on:item.done}>
+                    <img :src="item.pricture" alt="">
+                    <div class="prizeName">{{item.name}}</div>
+                </div>
+            </div>
+            <div class="controls">
+                <img :src="joinImg ?controlsJoin:controlsBack" alt="" @click="turn()">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+
+        var v = new Vue({
+            el: '#app',
+            data: {
+                joinImg: true,
+                everyClick: false,
+                joinClick: false,
+                gameChance: 2,
+                controlsBack:
+                    'http://olpdjpvtn.bkt.clouddn.com/Fp71M5arCnvypvqRGwQEJzfs_dd0',
+                controlsJoin:
+                    'http://olpdjpvtn.bkt.clouddn.com/Foq1F84_aqbg0Ze8-dtdGdAcNMU2',
+                gameList: []
+            },
+            methods: {
+
+                   turn() {
+                    // turnGame控制中间按钮是否能点击
+                    if (!this.gameChance) {
+                        //弹窗提示
+                        return
+                    }
+                    if (this.joinClick) {
+                        // 如果收起 调用展开
+                        location.reload()
+                    } else {
+                        this.gameList.forEach(it => {
+                            it.done = true
+                        })
+                        // 如果展开，调用收起方法
+                        this.everyClick = true
+                        this.subMove()
+                    }
+                },
+                // 控制每张牌能否点击
+                joinGame(index) {
+                    if (this.everyClick) {
+                        this.gameList[index].done = false
+                        this.gameChance--
+                        this.everyClick = false
+                        this.joinClick = true
+                    }
+                },
+                // 展开
+                addMove() {
+                    this.gameList.forEach((item, index) => {
+                        setTimeout(() => {
+                            this.gameList[index].aniChange = !this.gameList[index].aniChange
+                        }, index * 200)
+                    })
+                    setTimeout(() => {
+                        this.joinImg = false
+                        // 当游戏流程走完，变成洗牌，控制按钮以及每张牌才能被点击
+                        this.everyClick = true
+                    }, 2500)
+                },
+                // 收起
+                subMove() {
+                    this.gameList.forEach(it => {
+                        it.aniChange = !it.aniChange
+                    })
+                    setTimeout(() => {
+                        this.addMove()
+                    }, 1000)
+                }
+            },
+
+            mounted() {
+                 this.gameList = JSON.parse(localStorage.getItem('gameForm'))
+
+            },
+            created() {
+
+            }
+
+
+        });
+    </script>
+</body>
+
+</html>
